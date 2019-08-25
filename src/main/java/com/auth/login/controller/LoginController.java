@@ -1,17 +1,16 @@
 package com.auth.login.controller;
 
-import com.auth.login.model.User;
-import com.auth.login.service.MailService;
+import com.auth.login.model.LoginUserRequestResponse.LoginUserResponse;
+import com.auth.login.model.LoginUserRequestResponse.LoginUserRequest;
+import com.auth.login.model.SignupUserRequestResponse.SignupUserResponse;
+import com.auth.login.model.SignupUserRequestResponse.SignupUserRequest;
+import com.auth.login.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -19,27 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     @Autowired
-    private MailService mailService;
+    private UserService userService;
 
-    @Autowired
-    private User receiver;
 
-    @Value("${login.receiver.email}")
-    private String receiverMail;
-
-    @GetMapping(value = "mail")
+    @PostMapping("login")
     @ApiOperation(value = "Login User API", response = String.class)
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Successfully Logged in"),
+    @ApiResponses({ @ApiResponse(code = 200, message = "Login Successful"),
             @ApiResponse(code = 404, message = "API Not Found") })
-    public String sendMail() {
-        receiver.setEmailAddress(receiverMail);
+    public LoginUserResponse login(@RequestBody LoginUserRequest loginUserRequest) {
+        return userService.loginUser(loginUserRequest);
+    }
 
-        try {
-            mailService.sendEmail(receiver);
-        } catch (MailException mailException) {
-            System.out.println(mailException.getLocalizedMessage());
-        }
-        return "Congratulations! Your mail has been sent to the mail" + receiverMail;
+    @PostMapping("/v1/signup")
+    @ResponseBody
+    @ApiOperation(value = "Signup User API", response = SignupUserResponse.class)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Registration Successful"),
+            @ApiResponse(code = 404, message = "API Not Found") })
+    public SignupUserResponse signup(@RequestBody SignupUserRequest registerUserRequest) {
+        return userService.createUser(registerUserRequest);
     }
 }
