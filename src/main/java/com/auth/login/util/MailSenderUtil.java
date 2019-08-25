@@ -1,22 +1,19 @@
-package com.auth.login.service;
+package com.auth.login.util;
 
-import com.auth.login.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
 
-@Service
-public class MailService {
+public class MailSenderUtil {
     private JavaMailSender javaMailSender;
 
     @Autowired
-    public MailService(JavaMailSender javaMailSender) {
+    public MailSenderUtil(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
-    public void sendEmail(User user) throws MailException {
+    public void sendEmail(String emailId, String subject, String content) throws MailException {
 
         /*
          * This JavaMailSender Interface is used to send Mail in Spring Boot. This
@@ -26,13 +23,9 @@ public class MailService {
          */
 
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(user.getEmailAddress());
-        mail.setSubject("Testing Mail API");
-        mail.setText("Hurray ! You have done that dude...");
-
-        /*
-         * This send() contains an Object of SimpleMailMessage as an Parameter
-         */
+        mail.setTo(emailId);
+        mail.setSubject(subject);
+        mail.setText(content);
         javaMailSender.send(mail);
     }
 }
