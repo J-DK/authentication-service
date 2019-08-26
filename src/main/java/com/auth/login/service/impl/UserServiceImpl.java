@@ -115,22 +115,27 @@ public class UserServiceImpl implements UserService {
         ForgotPasswordResponse forgotPasswordResponse = new ForgotPasswordResponse();
 
         User user = userRepository.findByEmail(email);
-        String systemGeneratedPassword = PasswordGeneratorUtil.generatePassword(user.getFirstName());
-        user.setPassword(EncryptionUtil.encrpyt(systemGeneratedPassword));
+        if(null == user) {
+            forgotPasswordResponse.setCode("1007");
+            forgotPasswordResponse.setMessage("You have not registered yet. Please sign up first!!");
 
-        try {
-            userRepository.save(user);
+        } else {
+            String systemGeneratedPassword = PasswordGeneratorUtil.generatePassword(user.getFirstName());
+            user.setPassword(EncryptionUtil.encrpyt(systemGeneratedPassword));
 
-            String subject = "Updated Password";
-            String content = "Your new password is " + systemGeneratedPassword + ". Please consider changing your password";
-            mailSenderUtil.sendEmail(user.getEmail(), subject, content);
-            forgotPasswordResponse.setCode("200");
-            forgotPasswordResponse.setMessage("Your new password is successfully generated. Please check your mail.");
-        } catch (Exception e) {
-            forgotPasswordResponse.setCode("1006");
-            forgotPasswordResponse.setMessage("It seems that there is an issue while generating your password. Please try again later.");
+            try {
+                userRepository.save(user);
+
+                String subject = "Updated Password";
+                String content = "Your new password is " + systemGeneratedPassword + ". Please consider changing your password";
+                mailSenderUtil.sendEmail(user.getEmail(), subject, content);
+                forgotPasswordResponse.setCode("200");
+                forgotPasswordResponse.setMessage("Your new password is successfully generated. Please check your mail.");
+            } catch (Exception e) {
+                forgotPasswordResponse.setCode("1006");
+                forgotPasswordResponse.setMessage("It seems that there is an issue while generating your password. Please try again later.");
+            }
         }
-
-        return  forgotPasswordResponse;
+        return forgotPasswordResponse;
     }
 }

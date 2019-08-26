@@ -39,7 +39,7 @@ public class LoginController {
         return userService.createUser(registerUserRequest);
     }
 
-    @PostMapping("login/password")
+    @PutMapping("login/password")
     @ResponseBody
     @ApiOperation(value = "Forgot password API", response = SignupUserResponse.class)
     @ApiResponses({ @ApiResponse(code = 200, message = "Registration Successful"),
