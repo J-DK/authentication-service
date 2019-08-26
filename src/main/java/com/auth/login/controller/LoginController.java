@@ -1,5 +1,6 @@
 package com.auth.login.controller;
 
+import com.auth.login.model.ForgotPasswordRequestResponse.ForgotPasswordResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserRequest;
 import com.auth.login.model.SignupUserRequestResponse.SignupUserResponse;
@@ -20,7 +21,6 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
-
     @PostMapping("login")
     @ApiOperation(value = "Login User API", response = String.class)
     @ApiResponses({ @ApiResponse(code = 200, message = "Login Successful"),
@@ -29,12 +29,21 @@ public class LoginController {
         return userService.loginUser(loginUserRequest);
     }
 
-    @PostMapping("/v1/signup")
+    @PostMapping("signup")
     @ResponseBody
     @ApiOperation(value = "Signup User API", response = SignupUserResponse.class)
     @ApiResponses({ @ApiResponse(code = 200, message = "Registration Successful"),
             @ApiResponse(code = 404, message = "API Not Found") })
     public SignupUserResponse signup(@RequestBody SignupUserRequest registerUserRequest) {
         return userService.createUser(registerUserRequest);
+    }
+
+    @PostMapping("login/password")
+    @ResponseBody
+    @ApiOperation(value = "Forgot password API", response = SignupUserResponse.class)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Registration Successful"),
+            @ApiResponse(code = 404, message = "API Not Found") })
+    public ForgotPasswordResponse forgotPassword(@RequestParam String email) {
+         return userService.forgotPassword(email);
     }
 }

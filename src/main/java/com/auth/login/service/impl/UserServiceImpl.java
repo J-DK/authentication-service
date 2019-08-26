@@ -1,6 +1,7 @@
 package com.auth.login.service.impl;
 
 import com.auth.login.entity.User;
+import com.auth.login.model.ForgotPasswordRequestResponse.ForgotPasswordResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserRequest;
 import com.auth.login.model.SignupUserRequestResponse.SignupUserRequest;
@@ -9,6 +10,7 @@ import com.auth.login.repository.UserRepository;
 import com.auth.login.service.UserService;
 import com.auth.login.util.EncryptionUtil;
 import com.auth.login.util.MailSenderUtil;
+import com.auth.login.util.PasswordGeneratorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,12 +85,12 @@ public class UserServiceImpl implements UserService {
             try {
                 String encryptLoginPassword = EncryptionUtil.encrpyt(password);
                 if (user.getPassword().equals(encryptLoginPassword)) {
-                    loginUserResponse.setUserName(user.getFirstName() + " " + user.getLastName());
+                    loginUserResponse.setUserName(user.getUserName());
                     loginUserResponse.setEmail(email);
                     loginUserResponse.setCode("200");
                     loginUserResponse.setMessage("Successfully logged in!!");
                     String subject = "Welcome to our world!!";
-                    String content = "Someone (hopefully you) have been logged in";
+                    String content = "Someone (hopefully you) have been logged in!!";
                     mailSenderUtil.sendEmail(user.getEmail(), subject, content);
                 } else {
                     loginUserResponse.setCode("1003");
@@ -101,9 +103,34 @@ public class UserServiceImpl implements UserService {
         } else {
             loginUserResponse.setCode("1004");
             loginUserResponse
-                    .setMessage("There exists no user registered with the given email-id. Please Sign up first!!");
+                    .setMessage("There exists no user registered with the given email account. Please Sign up first!!");
         }
 
         return loginUserResponse;
+    }
+
+    @Override
+    public ForgotPasswordResponse forgotPassword(String email) {
+
+        ForgotPasswordResponse forgotPasswordResponse = new ForgotPasswordResponse();
+
+        User user = userRepository.findByEmail(email);
+        String systemGeneratedPassword = PasswordGeneratorUtil.generatePassword(user.getFirstName());
+        user.setPassword(EncryptionUtil.encrpyt(systemGeneratedPassword));
+
+        try {
+            userRepository.save(user);
+
+            String subject = "Updated Password";
+            String content = "Your new password is " + systemGeneratedPassword + ". Please consider changing your password";
+            mailSenderUtil.sendEmail(user.getEmail(), subject, content);
+            forgotPasswordResponse.setCode("200");
+            forgotPasswordResponse.setMessage("Your new password is successfully generated. Please check your mail.");
+        } catch (Exception e) {
+            forgotPasswordResponse.setCode("1006");
+            forgotPasswordResponse.setMessage("It seems that there is an issue while generating your password. Please try again later.");
+        }
+
+        return  forgotPasswordResponse;
     }
 }
