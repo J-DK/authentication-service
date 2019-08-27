@@ -10,4 +10,6 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     User save(User user);
 
     User findByEmail(String email);
+
+    User findByMobile(String mobile);
 }

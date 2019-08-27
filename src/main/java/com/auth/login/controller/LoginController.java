@@ -1,5 +1,6 @@
 package com.auth.login.controller;
 
+import com.auth.login.model.BaseRequestResponse;
 import com.auth.login.model.ForgotPasswordRequestResponse.ForgotPasswordResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserRequest;
@@ -46,5 +47,14 @@ public class LoginController {
             @ApiResponse(code = 404, message = "API Not Found") })
     public ForgotPasswordResponse forgotPassword(@RequestParam String email) {
          return userService.forgotPassword(email);
+    }
+
+    @PutMapping("user/validate")
+    @ResponseBody
+    @ApiOperation(value = "Validate User", response = BaseRequestResponse.BaseResponse.class)
+    @ApiResponses({ @ApiResponse(code = 200, message = "Registration Successful"),
+            @ApiResponse(code = 404, message = "API Not Found") })
+    public BaseRequestResponse.BaseResponse validateUserByMobile(@RequestParam String mobile) {
+        return userService.validateUserByMobile(mobile);
     }
 }

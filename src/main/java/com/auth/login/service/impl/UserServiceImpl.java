@@ -1,6 +1,7 @@
 package com.auth.login.service.impl;
 
 import com.auth.login.entity.User;
+import com.auth.login.model.BaseRequestResponse;
 import com.auth.login.model.ForgotPasswordRequestResponse.ForgotPasswordResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserRequest;
@@ -34,10 +35,12 @@ public class UserServiceImpl implements UserService {
     public SignupUserResponse createUser(SignupUserRequest signupUserRequest) {
         SignupUserResponse registerUserResponse = new SignupUserResponse();
 
-        User existingUser = userRepository.findByEmail(signupUserRequest.getEmail());
-        if (null != existingUser) {
+        User existingUserByEmail = userRepository.findByEmail(signupUserRequest.getEmail());
+        User existingUserByMobile = userRepository.findByMobile(signupUserRequest.getMobile());
+
+        if (null != existingUserByEmail && null != existingUserByMobile) {
             registerUserResponse.setCode("1001");
-            registerUserResponse.setMessage("There exists a user already with the given email");
+            registerUserResponse.setMessage("There exists a user already with the given email/mobile");
         } else {
             User user = new User();
             user.setEmail(signupUserRequest.getEmail());
@@ -139,5 +142,20 @@ public class UserServiceImpl implements UserService {
             }
         }
         return forgotPasswordResponse;
+    }
+
+    @Override
+    public BaseRequestResponse.BaseResponse validateUserByMobile(String mobile) {
+        BaseRequestResponse.BaseResponse baseResponse = new BaseRequestResponse.BaseResponse();
+        User user = userRepository.findByMobile(mobile);
+
+        if(null == user) {
+            baseResponse.setCode("1100");
+            baseResponse.setMessage("You have not registered with this mobile number. Please sign up first");
+        } else {
+            baseResponse.setCode("200");
+            baseResponse.setMessage("This mobile number is already registered");
+        }
+        return baseResponse;
     }
 }

@@ -1,5 +1,6 @@
 package com.auth.login.service;
 
+import com.auth.login.model.BaseRequestResponse;
 import com.auth.login.model.ForgotPasswordRequestResponse.ForgotPasswordResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserResponse;
 import com.auth.login.model.LoginUserRequestResponse.LoginUserRequest;
@@ -13,4 +14,6 @@ public interface UserService {
     LoginUserResponse loginUser(LoginUserRequest loginUserRequest);
 
     ForgotPasswordResponse forgotPassword(String email);
+
+    BaseRequestResponse.BaseResponse validateUserByMobile(String mobile);
 }
