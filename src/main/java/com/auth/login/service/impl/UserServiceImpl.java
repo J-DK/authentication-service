@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         User existingUserByEmail = userRepository.findByEmail(signupUserRequest.getEmail());
         User existingUserByMobile = userRepository.findByMobile(signupUserRequest.getMobile());
 
-        if (null != existingUserByEmail && null != existingUserByMobile) {
+        if (null != existingUserByEmail || null != existingUserByMobile) {
             registerUserResponse.setCode("1001");
             registerUserResponse.setMessage("There exists a user already with the given email/mobile");
         } else {
