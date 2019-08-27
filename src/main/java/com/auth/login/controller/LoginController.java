@@ -49,10 +49,10 @@ public class LoginController {
          return userService.forgotPassword(email);
     }
 
-    @PutMapping("user/validate")
+    @GetMapping("user/validate")
     @ResponseBody
     @ApiOperation(value = "Validate User", response = BaseRequestResponse.BaseResponse.class)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Registration Successful"),
+    @ApiResponses({ @ApiResponse(code = 200, message = "User exists with the mobile number"),
             @ApiResponse(code = 404, message = "API Not Found") })
     public BaseRequestResponse.BaseResponse validateUserByMobile(@RequestParam String mobile) {
         return userService.validateUserByMobile(mobile);
