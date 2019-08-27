@@ -59,6 +59,8 @@ public class UserServiceImpl implements UserService {
                 userRepository.save(user);
                 registerUserResponse.setCode("200");
                 registerUserResponse.setMessage("You have been successfully registered");
+                registerUserResponse.setEmail(user.getEmail());
+                registerUserResponse.setUserName(user.getUserName());
                 String subject = "Welcome to our world!!";
                 String content = "Thanks for signing up!! " + user.getUserName() + " is your user name.";
                 mailSenderUtil.sendEmail(user.getEmail(), subject, content);
@@ -127,7 +129,7 @@ public class UserServiceImpl implements UserService {
                 userRepository.save(user);
 
                 String subject = "Updated Password";
-                String content = "Your new password is " + systemGeneratedPassword + ". Please consider changing your password";
+                String content = "Your new password is " + systemGeneratedPassword;
                 mailSenderUtil.sendEmail(user.getEmail(), subject, content);
                 forgotPasswordResponse.setCode("200");
                 forgotPasswordResponse.setMessage("Your new password is successfully generated. Please check your mail.");
